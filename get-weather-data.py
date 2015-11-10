@@ -37,23 +37,29 @@ def main():
     flights = defaultdict(list)
     with open(args.flight_file, "r") as handle:
         reader = csv.DictReader(handle)
+        num_flights = 0
         for row in reader:
+            num_flights += 1
             flights[row["Origin"]].append(row)
+    print("Loaded {0} flights ...".format(num_flights))
 
-    # sort flights by departure time
-    for origin in flights.keys():
-        flights[origin] = sorted(flights[origin], key=lambda f: f["FlightDate"])
+    try:
+        # sort flights by departure time
+        for origin in flights.keys():
+            if origin not in airports.keys():
+                continue
+            flights[origin] = sorted(flights[origin], key=lambda f: f["FlightDate"])
 
-        num_flights = len(flights[origin])
-        print("Processing {0} flights from origin {1}".format(num_flights, origin))
-        for flight in flights[origin]:
-            num_requests = get_weather(flight, weather_data, airports, api_key)
-        print("\t{0}/{1} requests from cache".format(num_flights-num_requests, num_flights))
-
-    # re-write weather data
-    with open(args.weather_file, "w+") as handle:
-        json.dump(weather_data, handle)
-    
+            num_flights = len(flights[origin])
+            num_requests = 0
+            print("Processing {0} flights from origin {1}".format(num_flights, origin))
+            for flight in flights[origin]:
+                num_requests += get_weather(flight, weather_data, airports, api_key)
+            print("\t{0}/{1} requests from cache".format(num_flights-num_requests, num_flights))
+    finally:
+        # re-write weather data
+        with open(args.weather_file, "w+") as handle:
+            json.dump(weather_data, handle, indent=2)
 
 def get_weather(flight, weather_data, airports, api_key):
     # Request weather from the beginning of the day
@@ -76,7 +82,15 @@ def get_weather(flight, weather_data, airports, api_key):
     req_url = "https://api.forecast.io/forecast/{0}/{1},{2},{3}".format(api_key, airport["lat"], airport["long"], req_time.isoformat())
     resp = requests.get(req_url)
     full_response = resp.json()
+    if not "hourly" in full_response:
+        print("Mal-formatted response for request {0}, skipping".format(req_url))
+        return 0
     hourly_records = full_response["hourly"]["data"]
+    #print("Requested {0}, got {1} through {2}".format(
+    #    req_time,
+    #    datetime.fromtimestamp(hourly_records[0]["time"]),
+    #    datetime.fromtimestamp(hourly_records[1]["time"])))
+
     weather_data[flight["Origin"]].append({ "hourly_extent" : [hourly_records[0]["time"], hourly_records[-1]["time"]],
                                     "full_response" : full_response })
     return 1
