@@ -38,11 +38,16 @@ def main():
         writer.writerow(["airport", "hour", "precipIntensity", "temperature", "dewPoint", 
                 "visibility", "apparentTemperature", "pressure", "windSpeed", 
                 "precipProbability", "humidity", "windBearing", "weatherSummary", "meanPrecipIntensityLast3Hours"])
+        saw_vals = set()
         for flight in c.execute('select * from ontime'): 
             dep_time = get_departure_time(flight)
+            flight_key = [flight["Origin"], dep_time.strftime("%Y-%m-%d %H")] 
+            if tuple(flight_key) in saw_vals:
+                continue
             weather_features = get_weather_features(flight, weather_data, airport_id_map)
             if weather_features:
-                writer.writerow([flight["Origin"], dep_time.strftime("%Y-%m-%d %H")] + weather_features)
+                writer.writerow(flight_key + weather_features)
+                saw_vals.add(tuple(flight_key))
     
 def get_departure_time(flight):
     return datetime(int(flight["Year"]), int(flight["Month"]), int(flight["DayofMonth"]), 
@@ -62,16 +67,25 @@ def get_weather_features(flight, weather_data, airport_id_map):
             if hourly_data[i+1]["time"] > search_timestamp:
                 past_three_hours = hourly_data[max(i-3, 0):i]
                 current = hourly_data[i]
+                def get_default(record, key, defval=0):
+                    return  record[key] if key in record else defval
                 if past_three_hours:
-                    mean_precip_intensity = sum([r["precipIntensity"] for r in past_three_hours]) / len(past_three_hours)
+                    mean_precip_intensity = sum([get_default(r, "precipIntensity") for r in past_three_hours]) / len(past_three_hours)
                 else:
-                    mean_precip_intensity = current["precipIntensity"]
-                features = [current["precipIntensity"], current["temperature"], current["dewPoint"], 
-                            current["visibility"], current["apparentTemperature"], current["pressure"], 
-                            current["windSpeed"] if "windSpeed" in current else 0, 
-                            current["precipProbability"], current["humidity"], 
-                            current["windBearing"] if "windBearing" in current else 0, 
-                            current["summary"], mean_precip_intensity]
+                    mean_precip_intensity = get_default(current, "precipIntensity")
+                features = [get_default(current, "precipIntensity"),
+                            get_default(current, "temperature", None), 
+                            get_default(current, "dewPoint", None), 
+                            get_default(current, "visibility", None), 
+                            get_default(current, "apparentTemperature", None), 
+                            get_default(current, "pressure", None), 
+                            get_default(current, "windSpeed"),
+                            get_default(current, "precipProbability"), 
+                            get_default(current, "humidity", None), 
+                            get_default(current, "windBearing"),
+                            current["summary"].encode("ascii", "ignore"), 
+                            mean_precip_intensity]
+                #print(features)
                 return features
     else:
         return None
