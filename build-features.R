@@ -19,5 +19,5 @@ features <- merge(small.dat, airport_volume, by.x=c("Origin", "DepartureHour"), 
 airport_weather <- read.csv("../data/airport-weather.csv")
 features <- merge(features, airport_weather, by.x=c("Origin", "DepartureHour"), by.y=c("airport", "hour"), all.x=TRUE)
 
-write.csv(features, "../data/features2.csv", quote=FALSE, row.names=FALSE)
+write.csv(features, "../data/features2.csv", row.names=FALSE)
 
