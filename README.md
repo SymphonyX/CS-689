@@ -6,3 +6,4 @@ Keep in mind that this repository is public, and thus, everyone will be able to 
 
 To submit your projects, please create a new branch and push it as a separate branch. Do not try to merge anyother branch onto yours, ideally you will not be working off this repo, you will just push the final submission.
 
+Good Luck!
