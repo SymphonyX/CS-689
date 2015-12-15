@@ -5,6 +5,7 @@
 \usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{hyperref}
 
 \title{Avoiding Flight Delays with Supervised Ranking}
 \author{Dan Garant \and John Lalor \and Adam Nelson}
@@ -20,9 +21,19 @@ Taking the perspective of a passenger attempting to book a flight one day in adv
 
 \section{Introduction}
 
-Being able to determine whether a flight will take off and arrive on time is a question that is well-suited for analysis with machine learning. Air transportation is something that many people deal with regularly, and a huge amount of data is recorded by the U.S. Government for all of the flights that operate in the U.S. Combine that with the data available about weather patterns and weather history and you have a lot of information about the conditions surrounding air travel. For this project, we will explore this data, and attempt to answer the following question: Can we use machine learning to avoid flight delays when traveling by plane? In this report, we will give an overview of the dataset, and briefly describe some of the work done before using it as a resource, we will look at the data from a high level and look at trends and patterns that arise, and we will apply a number of supervised learning methods to the data to attempt to rank flights based on their likelihood of having a delay. The objective is to use the models to identify the flights that are least likely to be delayed. Our analysis will look at flight delay patterns according to two distinct problems: predicting a flight delay for flights leaving tomorrow, and predicting flight delays for flights leaving in one month (e.g. in thirty days).
+In recent years, the U.S. Bureau of Transportation Statistics (BTS)  has enabled easy access to a wealth of information on on-time flight performance of domestic air carriers\footnote{\url{http://www.transtats.bts.gov/}}.
+Given the availability of flight characteristics, the task of determining whether a flight will take off and arrive on time is well-suited for analysis with machine learning.
+Air transportation has become a central aspect of the U.S. culture for both business and recreation, with the number of domestic flights offerings growing steadily for decades.
+Accompanying the growth in air travel, numerous online services including Google Flights and Expedia provide passengers the ability to select from a variety of available air carriers, flight dates, and origins, when booking a flight.
+However, these services provide only high-level historic information about carrier-specific patterns in delays, if at all.
 
-\section{Data Sources}
+Combining historical characteristics of air carriers and airports with weather forecasts and weather trends (or \emph{normals}) would enable flight booking sites to provide more reliable and targeted information about delay risk.
+Our objective is to use supervised learning models to identify the flights with a low probability of delay. Our analysis will look at flight delay patterns according to two distinct problems: predicting a flight delay for flights leaving tomorrow, and predicting flight delays for flights leaving in one month (e.g. in thirty days).
+In section~\ref{sec:data-sources}, we give an overview of the BTS dataset, previous studies or airline delays using this dataset, and supplemental weather data sources we employ.
+In section~\ref{sec:exploratory}, we examine patterns in delays that can be exploited to construct a probabilistic model of delays.
+Section~\ref{sec:evaluation-methodology} formally details our method of evaluation, and section~\ref{sec:results} explores the results obtained by many commonly-used supervised learning models of various levels of sophistication. \section{Data Sources}
+
+\label{sec:data-sources}
 \subsection{Bureau of Transportation Dataset}
 
 The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo [cite]. The challenge was to create a graphical summary of the data, which consisted of flight statistics from October 1987 to April 2008. The submissions for this explored a variety of aspects of the data. (Need to elaborate here).
@@ -42,7 +53,7 @@ The BTS data includes a large number of data fields. Below we enumerate the fiel
 
 \subsection{Related Work}
 
-As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here. \cite{wicklin2009congestion} Used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years. \cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically. \cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports. \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
+As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here. \cite{wicklin2009congestion} used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years. \cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically. \cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports. \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
 
 \subsection{Supplemental Data}
 
@@ -50,6 +61,7 @@ In addition to the data provided by the BTS, we wanted to augment the feature se
 
 
 \section{Exploratory Analysis}
+\label{sec:exploratory}
 
 To inform our selection and tuning of supervised learning algorithms for this task, we performed a number of exploratory analyses characterizing the nature of dependence between specific features and the response (departure delay in minutes). First, we investigated characteristics of organizations involved in fulfilling the flight. \textcolor{red}{...}
 
@@ -82,6 +94,7 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 \end{figure}
 
 \section{Evaluation Methodology}
+\label{sec:evaluation-methodology}
 
 \textcolor{red}{
     \begin{itemize}
@@ -93,6 +106,7 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 }
 
 \section{Results}
+\label{sec:results}
 
 \begin{figure}
     \centering
@@ -101,10 +115,8 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 \end{figure}
 
 
-
-\bibliographystyle{plain}
-\bibliography{bibliography,bib.bib} 
-
+\bibliographystyle{named}
+\bibliography{bibliography}
 
 \end{document}
 
