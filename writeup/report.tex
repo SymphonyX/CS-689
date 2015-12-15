@@ -1,6 +1,10 @@
 \documentclass{article}
 
 \usepackage{amsmath, amssymb}
+\usepackage{natbib}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{color}
 
 \title{Avoiding Flight Delays with Supervised Ranking}
 \author{Dan Garant \and John Lalor \and Adam Nelson}
@@ -10,15 +14,21 @@
 \maketitle
 
 \begin{abstract}
+
 With the amount of data available on flights in the United States, one interesting task is to use this data in order to make predictions about flight performance. However, being able to find the correct features to use from the variety of available features is important when trying to build a model of flight delays. In this project, we look at predicting flight delays from the point of view of the passengers on the flight. We look at the task of predicting flight delays from two points of view: a customer looking for a flight that departs in one month, and a customer looking for a flight that departs tomorrow. The two tasks offer different features in terms of available weather data. We evaluate a number of models for each task, and present results in the form of rankings, where the flight with the lowest chance of having a delay is presented as the top result.
+
+In this work, we examine the task of selecting flights to minimize the risk of encountering a flight delay.
+Using features derived from weather, airport, and air carrier characteristics, we employ various supervised learning techniques to rank flights by their probability of experiencing a delay.
+\textcolor{red}{...}
+
 \end{abstract}
 
 \section{Introduction}
 
 Being able to determine whether a flight will take off and arrive on time is a question that is well-suited for analysis with machine learning. Air transportation is something that many people deal with regularly, and a huge amount of data is recorded by the U.S. Government for all of the flights that operate in the U.S. Combine that with the data available about weather patterns and weather history and you have a lot of information about the conditions surrounding air travel. For this project, we will explore this data, and attempt to answer the following question: Can we use machine learning to avoid flight delays when traveling by plane? In this report, we will give an overview of the dataset, and briefly describe some of the work done before using it as a resource, we will look at the data from a high level and look at trends and patterns that arise, and we will apply a number of supervised learning methods to the data to attempt to rank flights based on their likelihood of having a delay. The objective is to use the models to identify the flights that are least likely to be delayed. Our analysis will look at flight delay patterns according to two distinct problems: predicting a flight delay for flights leaving tomorrow, and predicting flight delays for flights leaving in one month (e.g. in thirty days).
 
-\section{BTS Dataset}
-\subsection{Dataset}
+\section{Data Sources}
+\subsection{Bureau of Transportation Dataset}
 
 The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo [cite]. The challenge was to create a graphical summary of the data, which consisted of flight statistics from October 1987 to April 2008. The submissions for this explored a variety of aspects of the data. (Need to elaborate here).
 
@@ -46,13 +56,59 @@ In addition to the data provided by the BTS, we wanted to augment the feature se
 
 \section{Exploratory Analysis}
 
+To inform our selection and tuning of supervised learning algorithms for this task, we performed a number of exploratory analyses characterizing the nature of dependence between specific features and the response (departure delay in minutes). First, we investigated characteristics of organizations involved in fulfilling the flight. \textcolor{red}{...}
+
+To gain a high-level understanding of the relationship between the weather features and delays, we fit a generalized additive model \citep{hastie1990generalized} of delay duration (in minutes) to a linear combination of cubic spline transformations of various weather features. Naturally, there are associations between each of the weather characteristics. For instance, humidity will necessarily be high when it is raining. To isolate the \emph{independent} effects of each of the features on the departure delay, we predicted the conditional expectation of delay $D$ with respect to an individual feature $F_i$, holding other features at their mean value:
+\begin{align}
+    \label{eq:conditional-exp}
+    E[D|F_1=\bar{F_1}, F_2=\bar{F_2}, \ldots, F_i = f_i, \ldots, F_n = \bar{F_n}].
+\end{align}
+Then, sweeping across various settings for $f_i$ and various feature $F_i$ yields a sensible explanatory model of delay with respect to weather characteristics. When stratifying by airport and evaluating (\ref{eq:conditional-exp}) with respect to wind bearing, we find a strong non-linear relationship. This dependence is likely the result of differing runway orientation at various airports. When wind is blowing \emph{across} a runway, take-off and landing is more challenging, and some pilots may opt to defer until winds are more favorable. Each airport may have a different runway orientation, so the model must be capable of capturing interactions between a discrete characteristic (airport) and a real-valued characteristic (wind direction).
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/windBearing-ATL.png}
+    \caption{Hartsfield-Jackson Atlanta}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/windBearing-DFW.png}
+    \caption{Dallas/Fort Worth}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/windBearing-ORD.png}
+    \caption{Chicago O'Hare}
+\end{subfigure}
+\caption{Relationship between wind bearing and expected delays (in minutes) at various airports. One standard error in the conditional expectation is shown in gray.} 
+\label{fig:wind-bearing-feature}
+\end{figure}
+
 \section{Evaluation Methodology}
+
+\textcolor{red}{
+    \begin{itemize}
+        \item Features available in each of the two task ``types''
+        \item Discussion of evaluation measures: classification accuracy, log-likelihood, ranking accuracy
+        \item Learning algorithms under consideration
+        \item hyper-parameter optimization
+    \end{itemize}
+}
 
 \section{Results}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/performance-by-sample-size.png}
+    \caption{Ranking accuracy of supervised techniques as sample size is varied}
+\end{figure}
+
+
 
 \bibliographystyle{plain}
-\bibliography{bibliography} 
+\bibliography{bibliography,bib.bib} 
 
 
 \end{document}

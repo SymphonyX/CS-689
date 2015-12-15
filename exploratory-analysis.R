@@ -3,6 +3,7 @@ library(caret)
 library(kernlab)
 library(ggplot2)
 library(plyr)
+library(mgcv)
 
 fulldat <- read.csv("../data/features2-shuf.csv", nrows=200000)
 dat <- fulldat[1:1000, ]
@@ -75,8 +76,8 @@ for(i in 1:length(predictors)) {
   g <- ggplot(cur.dat, aes_string(x=predictor, y="predictions")) + 
     geom_line(color="blue") +
     geom_ribbon(aes(ymin=predictions+predictionse, ymax=predictions-predictionse), alpha=0.1) + 
-    theme_bw(base_size=16) + 
-    labs(x=pred.name, y=paste0("E[Minutes Dep. Delay|", pred.name, "]"))
+    theme_bw(base_size=25) + 
+    labs(x=pred.name, y=paste0("E[Delay|", pred.name, "]"))
   print(g)
   png(paste0("writeup/figures/", predictor, ".png"), width=600, height=300)
   print(g)
@@ -99,8 +100,8 @@ for(i in 1:3) {
   g <- ggplot(cur.origin, aes(x=windBearing, y=prediction)) + 
     geom_line(color="blue") +
     geom_ribbon(aes(ymin=prediction-predictionse, ymax=prediction+predictionse), alpha=0.1) +
-    theme_bw(base_size=16) + 
-    labs(x="Wind Bearing", y=paste0("E[Minutes Dep. Delay|Wind Bearing]"))
+    theme_bw(base_size=25) + 
+    labs(x="Wind Bearing", y=paste0("E[Delay|Wind Bearing]"))
   print(g)
   png(paste0("writeup/figures/windBearing-", origin.name, ".png"), width=600, height=300)
   print(g)
