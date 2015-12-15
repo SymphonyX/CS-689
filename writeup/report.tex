@@ -10,7 +10,7 @@
 \maketitle
 
 \begin{abstract}
-
+With the amount of data available on flights in the United States, one interesting task is to use this data in order to make predictions about flight performance. However, being able to find the correct features to use from the variety of available features is important when trying to build a model of flight delays. In this project, we look at predicting flight delays from the point of view of the passengers on the flight. We look at the task of predicting flight delays from two points of view: a customer looking for a flight that departs in one month, and a customer looking for a flight that departs tomorrow. The two tasks offer different features in terms of available weather data. We evaluate a number of models for each task, and present results in the form of rankings, where the flight with the lowest chance of having a delay is presented as the top result.
 \end{abstract}
 
 \section{Introduction}
@@ -24,6 +24,21 @@ The original idea for the project came from the 2009 American Statistical Associ
 
 The data for the expo came from the United States Department of Transportation (DOT). The DOT Bureau of Transportation Statistics (BTS) track flight statistics for domestic flights. For the purposes of our project, we focused on flight statistics from the year 2014, as these flights were more recent than the original expo dataset and still provide a large set of data from which we could obtain conclusions. We obtained the data directly from the BTS website.  
 
+The BTS data includes a large number of data fields. Below we enumerate the fields that we included in our analysis, along with a description of each:
+
+\begin{itemize}
+\item Origin Airport and Departure Airport IDs: Unique IDs used to identify the origin and departure airports for each flight in the dataset. 
+\item Departure Date: Date of flight. 
+\item Month, Day of Month, and Day of Week: Additional date fields at varying levels of detail. These were included in an attempt to determine if there were specific days of the week or other specific periods that could be tied to flight delays. 
+\item Carrier ID: Unique ID for the airline of the flight.
+\item Scheduled Departure and Arrival Time: Scheduled arrival and departure times for each flight, as provided by the Computer Reservation System (CRS)
+\item Distance: Distance of the flight
+\end{itemize}
+
+\subsection{Related Work}
+
+As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here. \cite{wicklin2009congestion} Used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years. \cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically. \cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports. \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
+
 \subsection{Supplemental Data}
 
 In addition to the data provided by the BTS, we wanted to augment the feature set for flights by looking at weather patterns for each of the airports to determine the effect that weather might have on flight delays. For our two tasks, this involved obtaining two new sets of features: detailed weather information for the one-day task, and high level weather normals for the one-month task. The intuition here was that if you are looking to predict flight delays for tomorrow's flights, a lot of detailed weather information will be available for tomorrow that is most likely very accurate. One month in advance, however, the weather information is less likely to be accurate, so we instead looked at ten-year normals for the flight dates, in order to get an idea of weather one month in advance.
@@ -34,6 +49,10 @@ In addition to the data provided by the BTS, we wanted to augment the feature se
 \section{Evaluation Methodology}
 
 \section{Results}
+
+
+\bibliographystyle{plain}
+\bibliography{bibliography} 
 
 
 \end{document}
