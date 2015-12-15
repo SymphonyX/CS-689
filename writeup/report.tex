@@ -14,13 +14,8 @@
 \maketitle
 
 \begin{abstract}
-
-With the amount of data available on flights in the United States, one interesting task is to use this data in order to make predictions about flight performance. However, being able to find the correct features to use from the variety of available features is important when trying to build a model of flight delays. In this project, we look at predicting flight delays from the point of view of the passengers on the flight. We look at the task of predicting flight delays from two points of view: a customer looking for a flight that departs in one month, and a customer looking for a flight that departs tomorrow. The two tasks offer different features in terms of available weather data. We evaluate a number of models for each task, and present results in the form of rankings, where the flight with the lowest chance of having a delay is presented as the top result.
-
 In this work, we examine the task of selecting flights to minimize the risk of encountering a flight delay.
-Using features derived from weather, airport, and air carrier characteristics, we employ various supervised learning techniques to rank flights by their probability of experiencing a delay.
-\textcolor{red}{...}
-
+Taking the perspective of a passenger attempting to book a flight one day in advance or one month in advance, we gather and explore a number weather, airport, and air carrier characteristics that can be used to assess the probability of experiencing a delay. For each time horizon under consideration, these features vary in availability and quality, yielding an interesting pair of machine learning tasks. We evaluate a number of supervised learning models for each task, and present results in the form of rankings, consistent with a strategy that could be employed by a flight-booking service.
 \end{abstract}
 
 \section{Introduction}
