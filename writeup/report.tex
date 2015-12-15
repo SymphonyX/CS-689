@@ -14,9 +14,13 @@
 \maketitle
 
 \begin{abstract}
+
+With the amount of data available on flights in the United States, one interesting task is to use this data in order to make predictions about flight performance. However, being able to find the correct features to use from the variety of available features is important when trying to build a model of flight delays. In this project, we look at predicting flight delays from the point of view of the passengers on the flight. We look at the task of predicting flight delays from two points of view: a customer looking for a flight that departs in one month, and a customer looking for a flight that departs tomorrow. The two tasks offer different features in terms of available weather data. We evaluate a number of models for each task, and present results in the form of rankings, where the flight with the lowest chance of having a delay is presented as the top result.
+
 In this work, we examine the task of selecting flights to minimize the risk of encountering a flight delay.
 Using features derived from weather, airport, and air carrier characteristics, we employ various supervised learning techniques to rank flights by their probability of experiencing a delay.
 \textcolor{red}{...}
+
 \end{abstract}
 
 \section{Introduction}
@@ -29,6 +33,21 @@ Being able to determine whether a flight will take off and arrive on time is a q
 The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo [cite]. The challenge was to create a graphical summary of the data, which consisted of flight statistics from October 1987 to April 2008. The submissions for this explored a variety of aspects of the data. (Need to elaborate here).
 
 The data for the expo came from the United States Department of Transportation (DOT). The DOT Bureau of Transportation Statistics (BTS) track flight statistics for domestic flights. For the purposes of our project, we focused on flight statistics from the year 2014, as these flights were more recent than the original expo dataset and still provide a large set of data from which we could obtain conclusions. We obtained the data directly from the BTS website.  
+
+The BTS data includes a large number of data fields. Below we enumerate the fields that we included in our analysis, along with a description of each:
+
+\begin{itemize}
+\item Origin Airport and Departure Airport IDs: Unique IDs used to identify the origin and departure airports for each flight in the dataset. 
+\item Departure Date: Date of flight. 
+\item Month, Day of Month, and Day of Week: Additional date fields at varying levels of detail. These were included in an attempt to determine if there were specific days of the week or other specific periods that could be tied to flight delays. 
+\item Carrier ID: Unique ID for the airline of the flight.
+\item Scheduled Departure and Arrival Time: Scheduled arrival and departure times for each flight, as provided by the Computer Reservation System (CRS)
+\item Distance: Distance of the flight
+\end{itemize}
+
+\subsection{Related Work}
+
+As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here. \cite{wicklin2009congestion} Used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years. \cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically. \cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports. \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
 
 \subsection{Supplemental Data}
 
@@ -87,7 +106,10 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 \end{figure}
 
 
-\bibliographystyle{named}
-\bibliography{bib.bib}
+
+\bibliographystyle{plain}
+\bibliography{bibliography,bib.bib} 
+
+
 \end{document}
 
