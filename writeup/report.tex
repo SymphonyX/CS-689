@@ -31,7 +31,8 @@ Combining historical characteristics of air carriers and airports with weather f
 Our objective is to use supervised learning models to identify the flights with a low probability of delay. Our analysis will look at flight delay patterns according to two distinct problems: predicting a flight delay for flights leaving tomorrow, and predicting flight delays for flights leaving in one month (e.g. in thirty days).
 In section~\ref{sec:data-sources}, we give an overview of the BTS dataset, previous studies or airline delays using this dataset, and supplemental weather data sources we employ.
 In section~\ref{sec:exploratory}, we examine patterns in delays that can be exploited to construct a probabilistic model of delays.
-Section~\ref{sec:evaluation-methodology} formally details our method of evaluation, and section~\ref{sec:results} explores the results obtained by many commonly-used supervised learning models of various levels of sophistication. \section{Data Sources}
+Section~\ref{sec:evaluation-methodology} formally details our method of evaluation, and section~\ref{sec:results} explores the results obtained by many commonly-used supervised learning models of various levels of sophistication.
+\section{Data Sources}
 
 \label{sec:data-sources}
 \subsection{Bureau of Transportation Dataset}
@@ -95,7 +96,9 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 
 \section{Evaluation Methodology}
 \label{sec:evaluation-methodology}
+\subsection{Selection of Features}
 
+For both of our two tasks, we were able to use a subset of the features provided by the BTS. In addition to the flight data, different weather features were available for each of our two tasks. For the one-day task, a number of detailed weather features were available \textcolor{red}{talk about short-term API}. For the thirty-day task, a higher-level set of features were available via the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI). To simulate a prediction task for flights thirty-days in advance, we assumed that the only data available would be high level weather trends (\emph{normals}) that have been collected over periods of time. For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. The data we looked at were temperature normals, including the average temperature, and the temperature highs and lows over the periods. 
 \textcolor{red}{
     \begin{itemize}
         \item Features available in each of the two task ``types''
