@@ -37,18 +37,21 @@ Section~\ref{sec:evaluation-methodology} formally details our method of evaluati
 \label{sec:data-sources}
 \subsection{Bureau of Transportation Dataset}
 
-The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo [cite]. The challenge was to create a graphical summary of the data, which consisted of flight statistics from October 1987 to April 2008. The submissions for this explored a variety of aspects of the data. (Need to elaborate here).
+The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo \cite{wickham2011asa}.
+The challenge was to create a graphical summary of the data, which consisted of flight statistics from October 1987 to April 2008.
+The submissions for this explored a variety of aspects of the data, a number of which are mentioned below.
 
-The data for the expo came from the United States Department of Transportation (DOT). The DOT Bureau of Transportation Statistics (BTS) track flight statistics for domestic flights. For the purposes of our project, we focused on flight statistics from the year 2014, as these flights were more recent than the original expo dataset and still provide a large set of data from which we could obtain conclusions. We obtained the data directly from the BTS website.  
+The data for the 2009 ASA Expo came from the United States Department of Transportation (DOT).
+The DOT Bureau of Transportation Statistics (BTS) track flight statistics for domestic flights. For the purposes of our project, we focused on flight statistics from the year 2014, as these flights were more recent than the original expo dataset and still provide a large set of data from which we could obtain conclusions. We obtained the data directly from the BTS website.
 
 The BTS data includes a large number of data fields. Below we enumerate the fields that we included in our analysis, along with a description of each:
 
 \begin{itemize}
-\item Origin Airport and Departure Airport IDs: Unique IDs used to identify the origin and departure airports for each flight in the dataset. 
+\item Origin Airport and Departure Airport IDs: Unique IDs used to identify the origin and departure airports for each flight in the dataset. In our analysis we grouped flights with the same origin and departure airport together for our ranking task.
 \item Departure Date: Date of flight. 
 \item Month, Day of Month, and Day of Week: Additional date fields at varying levels of detail. These were included in an attempt to determine if there were specific days of the week or other specific periods that could be tied to flight delays. 
 \item Carrier ID: Unique ID for the airline of the flight.
-\item Scheduled Departure and Arrival Time: Scheduled arrival and departure times for each flight, as provided by the Computer Reservation System (CRS)
+\item Scheduled Departure and Arrival Time: Scheduled arrival and departure times for each flight, as provided by the Computer Reservation System (CRS) used by travel agents to allow agents to book flights and issue tickets.
 \item Distance: Distance of the flight
 \end{itemize}
 
