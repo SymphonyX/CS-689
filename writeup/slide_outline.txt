@@ -1,0 +1,18 @@
+Rough outline for slides:
+
+1. Motivation: Customers trying to book a flight from A to B. Which flight of the ones available has the best chance of not being delayed?ML Problem: Predicting flight delays. 
+
+2. Definition of Problem: 
+-Features: Flight data provided by BTS, one-day weather features (API), one-month weather normals (API)
+-Class labels: group delays into bins based on delay periods
+-Related work: Posters from 2009 session
+
+3. Methods:
+-Exploratory Analysis
+-ML Methods
+
+4. Results
+-one-day task results
+-one-month task results
+
+5. Conclusions, Lessons Learned
