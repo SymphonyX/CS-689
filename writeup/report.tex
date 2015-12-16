@@ -16,7 +16,9 @@
 
 \begin{abstract}
 In this work, we examine the task of selecting flights to minimize the risk of encountering a flight delay.
-Taking the perspective of a passenger attempting to book a flight one day in advance or one month in advance, we gather and explore a number weather, airport, and air carrier characteristics that can be used to assess the probability of experiencing a delay. For each time horizon under consideration, these features vary in availability and quality, yielding an interesting pair of machine learning tasks. We evaluate a number of supervised learning models for each task, and present results in the form of rankings, consistent with a strategy that could be employed by a flight-booking service.
+Taking the perspective of a passenger attempting to book a flight one day in advance or one month in advance, we gather and explore a number weather, airport, and air carrier characteristics that can be used to assess the probability of experiencing a delay.
+For each time horizon under consideration, these features vary in availability and quality, yielding an interesting pair of machine learning tasks.
+We evaluate a number of supervised learning models for each task, and present results in the form of rankings, consistent with a strategy that could be employed by a flight-booking service.
 \end{abstract}
 
 \section{Introduction}
@@ -57,11 +59,22 @@ The BTS data includes a large number of data fields. Below we enumerate the fiel
 
 \subsection{Related Work}
 
-As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here. \cite{wicklin2009congestion} used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years. \cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically. \cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports. \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
+As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here.
+\cite{wicklin2009congestion} used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years.
+\cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically.
+\cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports.
+\cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
+
+In addition to work performed as part of the 2009 Expo, there has been additional work using the BTS data.
+\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a number of carriers) tend to have more delays.
+\cite{stone2015investigating} found that small community airports suffered from departure delays, which then had a large effect on those passengers missing connecting flights and incurring large costs for rebooking.
 
 \subsection{Supplemental Data}
 
-In addition to the data provided by the BTS, we wanted to augment the feature set for flights by looking at weather patterns for each of the airports to determine the effect that weather might have on flight delays. For our two tasks, this involved obtaining two new sets of features: detailed weather information for the one-day task, and high level weather normals for the one-month task. The intuition here was that if you are looking to predict flight delays for tomorrow's flights, a lot of detailed weather information will be available for tomorrow that is most likely very accurate. One month in advance, however, the weather information is less likely to be accurate, so we instead looked at ten-year normals for the flight dates, in order to get an idea of weather one month in advance.
+In addition to the data provided by the BTS, we wanted to augment the feature set for flights by looking at weather patterns for each of the airports to determine the effect that weather might have on flight delays.
+For our two tasks, this involved obtaining two new sets of features: detailed weather information for the one-day task, and high level weather normals for the one-month task.
+The intuition here was that if you are looking to predict flight delays for tomorrow's flights, a lot of detailed weather information will be available for tomorrow that is most likely very accurate.
+One month in advance, however, the weather information is less likely to be accurate, so we instead looked at ten-year normals for the flight dates, in order to get an idea of weather one month in advance.
 
 
 \section{Exploratory Analysis}
