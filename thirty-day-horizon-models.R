@@ -1,15 +1,3 @@
-
-install.packages('e1071')
-install.packages('plyr')
-install.packages('nnet')
-install.packages('rpart')
-install.packages('ranger')
-install.packages('caret')
-install.packages('kernlab')
-install.packages('tgp')
-install.packages('gbm')
-
-
 library(e1071)
 library(plyr)
 library(nnet)
@@ -20,7 +8,7 @@ library(kernlab)
 library(tgp)
 library(gbm)
 
-setwd("~/projects/cs689/flights/")
+#setwd("~/projects/cs689/flights/")
 
 # eliminate any constant features -- typically only necessary when using a subset of the full data
 drop.const <- function(df) {
@@ -53,7 +41,7 @@ drop.high.dim <- function(df) {
   return(df)
 }
 
-split.train.test <- function(df, check.col.domain=c("Origin", "Dest")) { #, "weatherSummary")) {
+split.train.test <- function(df, check.col.domain=c("Origin", "Dest", "UniqueCarrier")) { #, "weatherSummary")) {
   pairs <- unique(df$pair_id)
   row.perm <- sample(length(pairs))
   train.pairs <- pairs[row.perm[1:(0.7 * length(row.perm))]]
@@ -76,7 +64,7 @@ runTrial <- function(num.recs, skipRows) {
   perf.results <- data.frame()
   
   #dat <- read.csv("../data/flight-pairs.csv", nrows=skipRows + num.recs)[(skipRows+1):(skipRows+num.recs), ]
-  dat <- read.csv("data/flight-pairs-30-2.csv", nrows=skipRows + num.recs)[(skipRows+1):(skipRows+num.recs), ]
+  dat <- read.csv("../data/flight-pairs-30-2.csv", nrows=skipRows + num.recs)[(skipRows+1):(skipRows+num.recs), ]
   
   # for now, converting outcome to binary
   dat$DepDelay <- factor(ifelse(dat$DepDelay != "[-Inf,0]", "Delay", "NoDelay"), levels=c("NoDelay", "Delay"))
@@ -138,6 +126,12 @@ runTrial <- function(num.recs, skipRows) {
   }
   
   cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+  gpmodel <- gausspr(DepDelay ~ ., data=dep.delay.train[1:1000, ])
+  class.probs <- predict(gpmodel, newdata=dep.delay.test, type="probabilities")
+  perf.results <- rbind(perf.results, report.results("Gaussian process", class.probs))
+  return(perf.results)
+  
+  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
   
   # Baseline model #1 -- predict uniform probabilities
   unique.outcomes <- unique(dep.delay.test$DepDelay)
@@ -197,12 +191,7 @@ runTrial <- function(num.recs, skipRows) {
   rmodel <- ranger(DepDelay ~ ., data=dep.delay.train, probability=TRUE, write.forest=TRUE)
   class.probs <- predict(rmodel, data=dep.delay.test, probability=TRUE)$predictions
   perf.results <- rbind(perf.results, report.results("Random forest", class.probs))
-  
-  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-#   gpmodel <- gausspr(DepDelay ~ ., data=dep.delay.train)
-#   class.probs <- predict(gpmodel, newdata=dep.delay.test, type="probabilities")
-#   perf.results <- rbind(perf.results, report.results("Gaussian process", class.probs))
-#   
+
   cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
   bmodel <- gbm(DepDelay ~ ., data=dep.delay.train, n.trees=1000, distribution="multinomial", cv.folds=5)
   optimal.trees <- gbm.perf(bmodel)
@@ -214,7 +203,7 @@ runTrial <- function(num.recs, skipRows) {
 
 all.results <- NULL
 #for(data.size in c(500, 1000, 2000, 3000)) {
-for(data.size in c(10000)) {
+for(data.size in c(5000)) {
   for(trial in 1:10) {
     cur.results <- runTrial(data.size, (trial-1)*data.size)
     cur.results$nrecs <- data.size

@@ -6,6 +6,8 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{hyperref}
+\usepackage{enumitem}
+\setitemize{noitemsep}%,topsep=0pt,parsep=0pt,partopsep=0pt}
 
 \title{Avoiding Flight Delays with Supervised Ranking}
 \author{Dan Garant \and John Lalor \and Adam Nelson}
@@ -39,7 +41,7 @@ Section~\ref{sec:evaluation-methodology} formally details our method of evaluati
 \label{sec:data-sources}
 \subsection{Bureau of Transportation Dataset}
 
-The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo \cite{wickham2011asa}.
+The original idea for the project came from the 2009 American Statistical Association Joint Statistical Meetings Data Expo \citep{wickham2011asa}.
 The challenge was to create a graphical summary of the data, which consisted of flight statistics from October 1987 to April 2008.
 The submissions for this explored a variety of aspects of the data, a number of which are mentioned below.
 
@@ -49,45 +51,48 @@ The DOT Bureau of Transportation Statistics (BTS) track flight statistics for do
 The BTS data includes a large number of data fields. Below we enumerate the fields that we included in our analysis, along with a description of each:
 
 \begin{itemize}
-\item Origin Airport and Departure Airport IDs: Unique IDs used to identify the origin and departure airports for each flight in the dataset. In our analysis we grouped flights with the same origin and departure airport together for our ranking task.
-\item Departure Date: Date of flight. 
-\item Month, Day of Month, and Day of Week: Additional date fields at varying levels of detail. These were included in an attempt to determine if there were specific days of the week or other specific periods that could be tied to flight delays. 
-\item Carrier ID: Unique ID for the airline of the flight.
+\item Origin Airport and Departure Airports: Origin and departure airports for each flight in the dataset, encoded as a discrete characteristic with one-hot encoding. 250 airports were represented in this dataset.
+\item Month, Day of Month, and Day of Week: Included since traffic patterns vary over the course of the year---specific periods could be tied to flight delays. Month and day of week were encoded as discrete characteristics.
+\item Carrier: Discrete characteristic representing the carrier of the flight. 14 distinct carriers were represented in the data.
 \item Scheduled Departure and Arrival Time: Scheduled arrival and departure times for each flight, as provided by the Computer Reservation System (CRS) used by travel agents to allow agents to book flights and issue tickets.
-\item Distance: Distance of the flight
+\item Distance: Distance from the origin to the destination
+\item Airport volume in and out: For each flight, we calculated the number of other flights scheduled to arrive and depart within the same hour that the reference flight was scheduled to depart. 
 \end{itemize}
 
-\subsection{Related Work}
-
-As part of the 2009 task, there were a number of submissions that used the dataset in interesting ways. We will briefly discuss the top four submissions for that task here.
-\cite{wicklin2009congestion} used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years.
-\cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically.
-\cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports.
-\cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
-
-In addition to work performed as part of the 2009 Expo, there has been additional work using the BTS data.
-\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a number of carriers) tend to have more delays.
-\cite{stone2015investigating} found that small community airports suffered from departure delays, which then had a large effect on those passengers missing connecting flights and incurring large costs for rebooking.
 
 \subsection{Supplemental Data}
 
-In addition to the data provided by the BTS, we wanted to augment the feature set for flights by looking at weather patterns for each of the airports to determine the effect that weather might have on flight delays.
+In addition to the data provided by the BTS, we augmented the feature set for flights with weather forecasts and patterns for each of the airports to determine the effect that weather might have on flight delays.
 For our two tasks, this involved obtaining two new sets of features: detailed weather information for the one-day task, and high level weather normals for the one-month task.
-The intuition here was that if you are looking to predict flight delays for tomorrow's flights, a lot of detailed weather information will be available for tomorrow that is most likely very accurate.
-One month in advance, however, the weather information is less likely to be accurate, so we instead looked at ten-year normals for the flight dates, in order to get an idea of weather one month in advance.
+In the former case, a wealth of relatively accurate and detailed weather information is available. We gathered historical weather data for a about 50\% of 2014 flights represented in the BTS data using a popular weather API\footnote{\url{https://developer.forecast.io/}}. This API provided 12 features:
+\begin{itemize}
+\item Precipitation intensity, measured in inches per hour
+\item Recent precipitation intensity, a derived feature, which we computed as the mean of precipitation intensity values for the previous 3 hours
+\item Dew point
+\item Visibility in miles
+\item Temperature
+\item Apparent temperature, representing a ``feels like'' temperature
+\item Pressure in millibars
+\item Precipitation probability, when actual precipitation data is not available but a forecast is
+\item Humidity
+\item Wind speed in miles per hour
+\item Wind bearing, ranging from 0 to 359 with 0 indicating that the wind is blowing true north
+\item Weather summary, a concise summary of the weather which we represented as a discrete characteristic
+\end{itemize}
 
+In the case of the one-month task, weather information is less likely to be accurate. Historical weather data would be inappropriate to include, so instead we collected ten-year climate normals for the flight dates from the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI) \citep{noaaclimatedata}.  For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. Specifically, we used the high, low, and average temperature for both origin and destination airports.
 
 \section{Exploratory Analysis}
 \label{sec:exploratory}
 
 To inform our selection and tuning of supervised learning algorithms for this task, we performed a number of exploratory analyses characterizing the nature of dependence between specific features and the response (departure delay in minutes). First, we investigated characteristics of organizations involved in fulfilling the flight. \textcolor{red}{...}
 
-To gain a high-level understanding of the relationship between the weather features and delays, we fit a generalized additive model \citep{hastie1990generalized} of delay duration (in minutes) to a linear combination of cubic spline transformations of various weather features. Naturally, there are associations between each of the weather characteristics. For instance, humidity will necessarily be high when it is raining. To isolate the \emph{independent} effects of each of the features on the departure delay, we predicted the conditional expectation of delay $D$ with respect to an individual feature $F_i$, holding other features at their mean value:
+To gain a high-level understanding of the relationship between the weather features and delays, we fit a generalized additive model \citep{hastie1990generalized} of delay duration (in minutes) to a linear combination of cubic spline transformations of various weather features. Naturally, there are associations between each of the weather characteristics. For instance, humidity will necessarily be high when it is raining. To isolate the \emph{independent} effects of each of the features on the departure delay, we predicted the conditional expectation of delay $D$ with respect to an individual feature $X_i$, holding other features at their mean value:
 \begin{align}
     \label{eq:conditional-exp}
-    E[D|F_1=\bar{F_1}, F_2=\bar{F_2}, \ldots, F_i = f_i, \ldots, F_n = \bar{F_n}].
+    E[D|X_1=\bar{X_1}, X_2=\bar{X_2}, \ldots, X_i = x_i, \ldots, X_n = \bar{X_n}].
 \end{align}
-Then, sweeping across various settings for $f_i$ and various feature $F_i$ yields a sensible explanatory model of delay with respect to weather characteristics. When stratifying by airport and evaluating (\ref{eq:conditional-exp}) with respect to wind bearing, we find a strong non-linear relationship. This dependence is likely the result of differing runway orientation at various airports. When wind is blowing \emph{across} a runway, take-off and landing is more challenging, and some pilots may opt to defer until winds are more favorable. Each airport may have a different runway orientation, so the model must be capable of capturing interactions between a discrete characteristic (airport) and a real-valued characteristic (wind direction).
+Then, sweeping across various settings for $x_i$ and various feature $X_i$ yields a sensible explanatory model of delay with respect to weather characteristics. When stratifying by airport and evaluating (\ref{eq:conditional-exp}) with respect to wind bearing, we find a strong non-linear relationship. This dependence is likely the result of differing runway orientation at various airports. When wind is blowing \emph{across} a runway, take-off and landing is more challenging, and some pilots may opt to defer until winds are more favorable. Each airport may have a different runway orientation, so the model must be capable of capturing interactions between a discrete characteristic (airport) and a real-valued characteristic (wind direction).
 
 \begin{figure}
 \centering
@@ -110,19 +115,33 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 \label{fig:wind-bearing-feature}
 \end{figure}
 
+
 \section{Evaluation Methodology}
 \label{sec:evaluation-methodology}
-\subsection{Selection of Features}
 
-For both of our two tasks, we were able to use a subset of the features provided by the BTS. In addition to the flight data, different weather features were available for each of our two tasks. For the one-day task, a number of detailed weather features were available \textcolor{red}{talk about short-term API}. For the thirty-day task, a higher-level set of features were available via the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI)\cite{noaaclimatedata}. To simulate a prediction task for flights thirty-days in advance, we assumed that the only data available would be high level weather trends (\emph{normals}) that have been collected over periods of time. For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. The data we looked at were temperature normals, including the average temperature, and the temperature highs and lows over the periods. 
-\textcolor{red}{
+In this work, we considered evaluating according to two related but distinct tasks: delay classification and risk ranking. In both cases, the training data consists of set of 3,500 flights randomly sampled from all 2014 flights for which weather data was available. Each flight is annotated with a binary delay class, ``delay'' if the flight left 1 or more minute after the scheduled departure time, or ``no delay'' otherwise. For the delay classification task, learning algorithms are evaluated based on how well they can predict this binary class label. From a distinct pool of 1,500 test flights, we compute the classification accuracy as the proportion of correctly labeled instances.
+
+The risk ranking task is more closely related to the intended passenger-centric use case. For this task, the test set consists of 750 \emph{pairs} of flights, where each pair has the same origin, destination, and flight date. For each flight in the pair, the delay probability, $P(D=\text{delay}|x_1, x_2, x_3, \ldots, x_n)$, is estimated, rather than the delay class. The flight with the smallest delay probability is marked as ``favorable''. Then, the ranking accuracy is computed as the proportion of pairs for which (1) the pair has differing delay status, and (2) the favorable flight experienced a shorter delay.
+
+We considered machine learning algorithms from three categories:
+\begin{itemize}
+    \item Simple/baseline methods
     \begin{itemize}
-        \item Features available in each of the two task ``types''
-        \item Discussion of evaluation measures: classification accuracy, log-likelihood, ranking accuracy
-        \item Learning algorithms under consideration
-        \item hyper-parameter optimization
+        \item Marginal and uniformly random class probabilities. The marginal baseline represents a ``null'' model for the delay classification task. It always predicts the most common class. The uniform random baseline represents a null model for the ranking task, as it randomly marks one of the flights as favorable.
+        \item Logistic regression
     \end{itemize}
-}
+    \item Tree-based methods
+    \begin{itemize}
+        \item Decision tree, complexity cost tuned with linear search
+        \item Random forest, number of trees set with cross-validation
+        \item Boosted classification trees, iterations set with cross-validation
+    \end{itemize}
+    \item Kernel-based methods
+    \begin{itemize}
+        \item RBF Suport vector machines, bandwidth hyperparameter set with linear search
+        \item RBF Gaussian processes, bandwidth hyperparameter set with linear search
+    \end{itemize}
+\end{itemize}
 
 \section{Results}
 \label{sec:results}
@@ -133,6 +152,19 @@ For both of our two tasks, we were able to use a subset of the features provided
     \caption{Ranking accuracy of supervised techniques as sample size is varied}
 \end{figure}
 
+\section{Related Work}
+
+As part of the 2009 ASA Data Expo task, there were a number of submissions that used the Bureau of Transportation Statistics dataset in interesting ways. We will briefly discuss the top four submissions for that task here.
+\cite{wicklin2009congestion} used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years.
+\cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically.
+\cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports.
+\cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
+
+In addition to work performed as part of the 2009 Expo, there has been additional work using the BTS data.
+\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a number of carriers) tend to have more delays.
+\cite{stone2015investigating} found that small community airports suffered from departure delays, which then had a large effect on those passengers missing connecting flights and incurring large costs for rebooking.
+
+\section{Conclusions}
 
 \bibliographystyle{named}
 \bibliography{bibliography}
