@@ -39,7 +39,7 @@ drop.high.dim <- function(df) {
   return(df)
 }
 
-split.train.test <- function(df, check.col.domain=c("Origin", "Dest", "weatherSummary")) {
+split.train.test <- function(df, check.col.domain=c("Origin", "Dest")) {#, "weatherSummary")) {
   pairs <- unique(df$pair_id)
   row.perm <- sample(length(pairs))
   train.pairs <- pairs[row.perm[1:(0.7 * length(row.perm))]]
@@ -176,14 +176,14 @@ runTrial <- function(num.recs, skipRows) {
   perf.results <- rbind(perf.results, report.results(config.name, class.probs))
   
   cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-  rmodel <- ranger(DepDelay ~ ., data=dep.delay.train, probability=TRUE, write.forest=TRUE)
-  class.probs <- predict(rmodel, data=dep.delay.test, probability=TRUE)$predictions
-  perf.results <- rbind(perf.results, report.results("Random forest", class.probs))
-  
-  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-  gpmodel <- gausspr(DepDelay ~ ., data=dep.delay.train)
+  gpmodel <- gausspr(DepDelay ~ ., data=dep.delay.train[1:1000, ])
   class.probs <- predict(gpmodel, newdata=dep.delay.test, type="probabilities")
   perf.results <- rbind(perf.results, report.results("Gaussian process", class.probs))
+  
+  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+  rmodel <- ranger(DepDelay ~ ., data=dep.delay.train, probability=TRUE, write.forest=TRUE, num.trees=1000)
+  class.probs <- predict(rmodel, data=dep.delay.test, probability=TRUE)$predictions
+  perf.results <- rbind(perf.results, report.results("Random forest", class.probs))
   
   cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
   bmodel <- gbm(DepDelay ~ ., data=dep.delay.train, n.trees=1000, distribution="multinomial", cv.folds=5)
@@ -196,7 +196,7 @@ runTrial <- function(num.recs, skipRows) {
 
 all.results <- NULL
 #for(data.size in c(500, 1000, 2000, 3000)) {
-for(data.size in c(10000)) {
+for(data.size in c(5000)) {
   for(trial in 1:10) {
     cur.results <- runTrial(data.size, (trial-1)*data.size)
     cur.results$nrecs <- data.size

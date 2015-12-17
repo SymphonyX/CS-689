@@ -22,7 +22,7 @@ carrier.dat$CarrierName <- factor(carrier.dat$Description, levels=carrier.dat$De
 
 g <- ggplot(carrier.dat, aes(x=CarrierName, y=estmean, 
                              ymin=estmean-estsd, ymax=estmean+estsd, color=CarrierName)) + 
-  geom_errorbar(size=2) + guides(color="none") + 
+  geom_errorbar(size=2) + guides(color="none") + labs(x="Carrier Name", y="E[Delay|Carrier]") +
   theme_bw(base_size=16) + theme(axis.text.x=element_text(angle=45))
 print(g)
 
