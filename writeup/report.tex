@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[twocolumn]{article}
 
 \usepackage{amsmath, amssymb}
 \usepackage{natbib}
@@ -7,7 +7,7 @@
 \usepackage{color}
 \usepackage{hyperref}
 \usepackage{enumitem}
-\setitemize{noitemsep}%,topsep=0pt,parsep=0pt,partopsep=0pt}
+\setitemize{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
 
 \title{Avoiding Flight Delays with Supervised Ranking}
 \author{Dan Garant \and John Lalor \and Adam Nelson}
@@ -18,7 +18,7 @@
 
 \begin{abstract}
 In this work, we examine the task of selecting flights to minimize the risk of encountering a flight delay.
-Taking the perspective of a passenger attempting to book a flight one day in advance or one month in advance, we gather and explore a number weather, airport, and air carrier characteristics that can be used to assess the probability of experiencing a delay.
+Taking the perspective of a passenger attempting to book a flight one day in advance or thirty days in advance, we gather and explore a number weather, airport, and air carrier characteristics that can be used to assess the probability of experiencing a delay.
 For each time horizon under consideration, these features vary in availability and quality, yielding an interesting pair of machine learning tasks.
 We evaluate a number of supervised learning models for each task, and present results in the form of rankings, consistent with a strategy that could be employed by a flight-booking service.
 \end{abstract}
@@ -32,7 +32,7 @@ Accompanying the growth in air travel, numerous online services including Google
 However, these services provide only high-level historic information about carrier-specific patterns in delays, if at all.
 
 Combining historical characteristics of air carriers and airports with weather forecasts and weather trends (or \emph{normals}) would enable flight booking sites to provide more reliable and targeted information about delay risk.
-Our objective is to use supervised learning models to identify the flights with a low probability of delay. Our analysis will look at flight delay patterns according to two distinct problems: predicting a flight delay for flights leaving tomorrow, and predicting flight delays for flights leaving in one month (e.g. in thirty days).
+Our objective is to use supervised learning models to identify the flights with a low probability of delay. Our analysis will look at flight delay patterns according to two distinct problems: predicting a flight delay for flights leaving tomorrow, and predicting flight delays for flights leaving in thirty days.
 In section~\ref{sec:data-sources}, we give an overview of the BTS dataset, previous studies or airline delays using this dataset, and supplemental weather data sources we employ.
 In section~\ref{sec:exploratory}, we examine patterns in delays that can be exploited to construct a probabilistic model of delays.
 Section~\ref{sec:evaluation-methodology} formally details our method of evaluation, and section~\ref{sec:results} explores the results obtained by many commonly-used supervised learning models of various levels of sophistication.
@@ -84,7 +84,7 @@ One month in advance, however, the weather information is less likely to be accu
 Therefore in order to effectively simulate the amount of data available to a model when dealing with our two task scenarios, we only included the detailed flight information in our one-day feature set, and only included the high-level weather normals in our thirty-day task feature set.
 
 
-In the former case, a wealth of relatively accurate and detailed weather information is available. We gathered historical weather data for a about 50\% of 2014 flights represented in the BTS data using a popular weather API\footnote{\url{https://developer.forecast.io/}}. This API provided 12 features:
+In case of the one-day task, a wealth of relatively accurate and detailed weather information is available. We gathered historical weather data for a about 50\% of 2014 flights represented in the BTS data using a popular weather API\footnote{\url{https://developer.forecast.io/}}. This API provided 12 features:
 \begin{itemize}
 \item Precipitation intensity, measured in inches per hour
 \item Recent precipitation intensity, a derived feature, which we computed as the mean of precipitation intensity values for the previous 3 hours
@@ -100,8 +100,7 @@ In the former case, a wealth of relatively accurate and detailed weather informa
 \item Weather summary, a concise summary of the weather which we represented as a discrete characteristic
 \end{itemize}
 
-
-In the case of the one-month task, weather information is less likely to be accurate. Historical weather data would be inappropriate to include, so instead we collected ten-year climate normals for the flight dates from the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI) \citep{noaaclimatedata}.  For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. Specifically, we used the high, low, and average temperature for both origin and destination airports.
+In the case of the one-month task, quality weather forecasts are not avilable. Historical weather data would be inappropriate to include, so instead we collected ten-year climate normals for the flight dates from the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI) \citep{noaaclimatedata}.  For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. Specifically, we used the high, low, and average temperature for both origin and destination airports.
 
 \section{Exploratory Analysis}
 \label{sec:exploratory}
@@ -127,11 +126,6 @@ Then, sweeping across various settings for $x_i$ and various feature $X_i$ yield
     \includegraphics[width=\linewidth]{figures/windBearing-DFW.png}
     \caption{Dallas/Fort Worth}
 \end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/windBearing-ORD.png}
-    \caption{Chicago O'Hare}
-\end{subfigure}
 \caption{Relationship between wind bearing and expected delays (in minutes) at various airports. One standard error in the conditional expectation is shown in gray.} 
 \label{fig:wind-bearing-feature}
 \end{figure}
@@ -140,62 +134,56 @@ Then, sweeping across various settings for $x_i$ and various feature $X_i$ yield
 \section{Evaluation Methodology}
 \label{sec:evaluation-methodology}
 
-
-For both of our two tasks, we were able to use a subset of the features provided by the BTS, as mentioned above.
-In addition to the flight data, different weather features were available for each of our two tasks. 
-For the one-day task, a number of detailed weather features were available via the forecast.io API.
-Some of the features included were air pressure readings, precipitation levels, etc. \textcolor{red}{look at slides for others}. 
-For the thirty-day task, a higher-level set of features were available via the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI)\cite{noaaclimatedata}.
-We included the average, high, and low temperature normals for both the origin and destination airports as features for the thirty-day task.
-To simulate a prediction task for flights thirty-days in advance, we assumed that the only data available would be high level weather trends (\emph{normals}) that have been collected over periods of time. 
-For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. 
-The data we looked at were temperature normals, including the average temperature, and the temperature highs and lows over the periods. 
-
-\subsection{Metrics for Evaluation}
-
-
-
-    \begin{itemize}
-        \item Features available in each of the two task ``types''-Done(JL)
-        \item Discussion of evaluation measures: classification accuracy, log-likelihood, ranking accuracy
-        \item Learning algorithms under consideration
-        \item hyper-parameter optimization
-\end{itemize}
-
-
 In this work, we considered evaluating according to two related but distinct tasks: delay classification and risk ranking. In both cases, the training data consists of set of 3,500 flights randomly sampled from all 2014 flights for which weather data was available. Each flight is annotated with a binary delay class, ``delay'' if the flight left 1 or more minute after the scheduled departure time, or ``no delay'' otherwise. For the delay classification task, learning algorithms are evaluated based on how well they can predict this binary class label. From a distinct pool of 1,500 test flights, we compute the classification accuracy as the proportion of correctly labeled instances.
 
 The risk ranking task is more closely related to the intended passenger-centric use case. For this task, the test set consists of 750 \emph{pairs} of flights, where each pair has the same origin, destination, and flight date. For each flight in the pair, the delay probability, $P(D=\text{delay}|x_1, x_2, x_3, \ldots, x_n)$, is estimated, rather than the delay class. The flight with the smallest delay probability is marked as ``favorable''. Then, the ranking accuracy is computed as the proportion of pairs for which (1) the pair has differing delay status, and (2) the favorable flight experienced a shorter delay.
 
+\begin{figure*}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/class-performance-sample-5000-OneDayHorizon.png}
+        \caption{One-day horizon}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/class-performance-sample-5000-OneMonthHorizon.png}
+        \caption{Thirty-day horizon}
+    \end{subfigure}
+    \caption{Classification Accuracy}
+    \label{fig:classification-accuracy}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/performance-sample-5000-OneDayHorizon.png}
+        \caption{One-day horizon}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/performance-sample-5000-OneMonthHorizon.png}
+        \caption{Thirty-day horizon}
+    \end{subfigure}
+    \caption{Ranking Accuracy}
+    \label{fig:ranking-accuracy}
+\end{figure*}
+
 We considered machine learning algorithms from three categories:
 \begin{itemize}
-    \item Simple/baseline methods
-    \begin{itemize}
-        \item Marginal and uniformly random class probabilities. The marginal baseline represents a ``null'' model for the delay classification task. It always predicts the most common class. The uniform random baseline represents a null model for the ranking task, as it randomly marks one of the flights as favorable.
-        \item Logistic regression
-
-    \end{itemize}
-    \item Tree-based methods
-    \begin{itemize}
-        \item Decision tree, complexity cost tuned with linear search
-        \item Random forest, number of trees set with cross-validation
-        \item Boosted classification trees, iterations set with cross-validation
-    \end{itemize}
-    \item Kernel-based methods
-    \begin{itemize}
-        \item RBF Suport vector machines, bandwidth hyperparameter set with linear search
-        \item RBF Gaussian processes, bandwidth hyperparameter set with linear search
-    \end{itemize}
+    \item Simple/baseline methods: These included methods that predict from marginal and uniformly random class probabilities. The marginal baseline represents a ``null'' model for the delay classification task. It always predicts the most common class. The uniform random baseline represents a null model for the ranking task, as it randomly marks one of the flights as favorable. We also considered classical logistic regression.
+    \item Tree-based methods: This category includes decision trees, random forests, and boosted classification trees. We tuned the complexity penality of decision trees with linear search. For random forests, we set set the number of trees with cross-validation, and for boosted classification trees, we set the number of boosting iterations with cross-validation.
+    \item Kernel-based methods: In this group, we used support vector machines and Gaussian processes. In each case, we used a radial basis function kernel with bandwidth hyper-parameter set with linear search.
 \end{itemize}
 
 \section{Results}
 \label{sec:results}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{figures/performance-by-sample-size.png}
-    \caption{Ranking accuracy of supervised techniques as sample size is varied}
-\end{figure}
+Figure~\ref{fig:classification-accuracy} shows the performance of classification results for both the one-day and thirty-day tasks. Several properties are apparent. First, all of the methods are able to generally out-perform the marginal baseline. In both cases, support vector machines and random forests are most effective. With the exception of random forests, tree-based methods perform rather poorly, perhaps owing to the relatively high cardinality of discrete features such as airport and carrier. Interesting, performance in the one-day task is comparable to that in the one-month task. This suggests that weather information is relatively uninformative in predicting delays. Upon inspecting the distribution of weather characteristics during the hour that all 2014 flights were scheduled to depart, we found that 91\% of instances are categorized as clear, partly cloudy, mostly cloudy, or overcast. Even while the ratio of clear to rainy days in the U.S. is approximately 3:1, the number of \emph{hours} without precipitation to those with precipitation is approximately 20:1. Thus, while there is a strong relationship between various forms of inclement weather, as shown in section~\ref{sec:exploratory}, opportunities to exploit this information are fairly limited.
+
+Figure~\ref{fig:ranking-accuracy} shows the results for the ranking task. In this case, the performance of most methods is fairly comparable, typically 10-20\% more accurate than random. Again, the additional weather information available in the one-day horizon task does not improve performance.
+
 
 \section{Related Work}
 
@@ -205,11 +193,13 @@ As part of the 2009 ASA Data Expo task, there were a number of submissions that 
 \cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports.
 \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
 
-In addition to work performed as part of the 2009 Expo, there has been additional work using the BTS data.
-\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a number of carriers) tend to have more delays.
+In addition to work performed as part of the 2009 Data Expo, there has been additional work using the BTS data.
+\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a large number of carriers) tend to have more delays.
 \cite{stone2015investigating} found that small community airports suffered from departure delays, which then had a large effect on those passengers missing connecting flights and incurring large costs for rebooking.
 
 \section{Conclusions}
+
+
 
 \bibliographystyle{named}
 \bibliography{bibliography}
