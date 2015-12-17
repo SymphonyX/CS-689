@@ -105,7 +105,14 @@ In the case of the one-month task, quality weather forecasts are not avilable. H
 \section{Exploratory Analysis}
 \label{sec:exploratory}
 
-To inform our selection and tuning of supervised learning algorithms for this task, we performed a number of exploratory analyses characterizing the nature of dependence between specific features and the response (departure delay in minutes). First, we investigated characteristics of organizations involved in fulfilling the flight. \textcolor{red}{...}
+To inform our selection and tuning of supervised learning algorithms for this task, we performed a number of exploratory analyses characterizing the nature of dependence between specific features and the response (departure delay in minutes). First, we investigated characteristics of organizations involved in fulfilling the flight. Using a linear model, we estimated the conditional mean and variance of the departure delays (in minutes) given air carrier. We find significant differences between carriers, shown in Figure~\ref{fig:carrier-performance}. Southwest Airlines is the biggest offender, with an expected delay duration of more than 15 minutes. At the other end of the spectrum, Hawaiian Airlines has a negative expectation, indicating that most flights leave before scheduled.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\linewidth]{figures/carrier-performance.png}
+    \caption{Performance of Major Domestic Air Carriers}
+    \label{fig:carrier-performance}
+\end{figure*}
 
 To gain a high-level understanding of the relationship between the weather features and delays, we fit a generalized additive model \citep{hastie1990generalized} of delay duration (in minutes) to a linear combination of cubic spline transformations of various weather features. Naturally, there are associations between each of the weather characteristics. For instance, humidity will necessarily be high when it is raining. To isolate the \emph{independent} effects of each of the features on the departure delay, we predicted the conditional expectation of delay $D$ with respect to an individual feature $X_i$, holding other features at their mean value:
 \begin{align}
@@ -132,18 +139,23 @@ We also find intuitive dependencies between precipitation intensity, shown in Fi
 \label{fig:wind-bearing-feature}
 \end{figure*}
 
-\begin{figure}
+\begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figures/precipIntensity.png}
-    \caption{Relationship between precipitation and delay}
-    \label{fig:precip-delay-relationship}
-\end{figure}
-
-\begin{figure}
+\begin{subfigure}{0.45\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/windSpeed.png}
     \caption{Relationship between wind speed and delay}
     \label{fig:wind-speed-delay-relationship}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/precipIntensity.png}
+    \caption{Relationship between precipitation and delay}
+    \label{fig:precip-delay-relationship}
+\end{subfigure}
+\end{figure*}
+
+\begin{figure}
 \end{figure}
 
 
