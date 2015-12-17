@@ -112,9 +112,11 @@ To gain a high-level understanding of the relationship between the weather featu
     \label{eq:conditional-exp}
     E[D|X_1=\bar{X_1}, X_2=\bar{X_2}, \ldots, X_i = x_i, \ldots, X_n = \bar{X_n}].
 \end{align}
-Then, sweeping across various settings for $x_i$ and various feature $X_i$ yields a sensible explanatory model of delay with respect to weather characteristics. When stratifying by airport and evaluating (\ref{eq:conditional-exp}) with respect to wind bearing, we find a strong non-linear relationship. This dependence is likely the result of differing runway orientation at various airports. When wind is blowing \emph{across} a runway, take-off and landing is more challenging, and some pilots may opt to defer until winds are more favorable. Each airport may have a different runway orientation, so the model must be capable of capturing interactions between a discrete characteristic (airport) and a real-valued characteristic (wind direction).
+Then, sweeping across various settings for $x_i$ and various feature $X_i$ yields a sensible explanatory model of delay with respect to weather characteristics. When stratifying by airport and evaluating (\ref{eq:conditional-exp}) with respect to wind bearing, we find a strong non-linear relationship illustrated in Figure~\ref{fig:wind-bearing-feature}. 
+This dependence is likely the result of differing runway orientation at various airports. When wind is blowing \emph{across} a runway, take-off and landing is more challenging, and some pilots may opt to defer until winds are more favorable. Each airport may have a different runway orientation, so the model must be capable of capturing interactions between a discrete characteristic (airport) and a real-valued characteristic (wind direction).
+We also find intuitive dependencies between precipitation intensity, shown in Figure~\ref{fig:precip-delay-relationship}, and wind speed, shown in Figure~\ref{fig:wind-speed-delay-relationship}.
 
-\begin{figure}
+\begin{figure*}
 \centering
 \begin{subfigure}{0.45\textwidth}
     \centering
@@ -128,6 +130,20 @@ Then, sweeping across various settings for $x_i$ and various feature $X_i$ yield
 \end{subfigure}
 \caption{Relationship between wind bearing and expected delays (in minutes) at various airports. One standard error in the conditional expectation is shown in gray.} 
 \label{fig:wind-bearing-feature}
+\end{figure*}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/precipIntensity.png}
+    \caption{Relationship between precipitation and delay}
+    \label{fig:precip-delay-relationship}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/windSpeed.png}
+    \caption{Relationship between wind speed and delay}
+    \label{fig:wind-speed-delay-relationship}
 \end{figure}
 
 
