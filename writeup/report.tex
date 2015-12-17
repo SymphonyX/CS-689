@@ -212,20 +212,13 @@ Figure~\ref{fig:classification-accuracy} shows the performance of classification
 
 Figure~\ref{fig:ranking-accuracy} shows the results for the ranking task. In this case, the performance of most methods is fairly comparable, typically 10-20\% more accurate than random. Again, the additional weather information available in the one-day horizon task does not improve performance.
 
-
-\section{Related Work}
-
-As part of the 2009 ASA Data Expo task, there were a number of submissions that used the Bureau of Transportation Statistics dataset in interesting ways. We will briefly discuss the top four submissions for that task here.
-\cite{wicklin2009congestion} used SAS Software to provide a number of visualizations of the data, including departure delay heatmaps by month for each of the years included in the data and historical comparisons of flight delays, showing that the number of delays varied widely between years.
-\cite{hofmann2011delayed} found that Newark airport was the worst offender when it came to flight delays, which one author can back up empirically.
-\cite{wickham2011tale} looked at two specific airports, Oakland and San Francisco, and compared number of flights between the two airports, looking at trends in flight numbers in the two airports.
-\cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
-
-In addition to work performed as part of the 2009 Data Expo, there has been additional work using the BTS data.
-\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a large number of carriers) tend to have more delays.
-\cite{stone2015investigating} found that small community airports suffered from departure delays, which then had a large effect on those passengers missing connecting flights and incurring large costs for rebooking.
-
-\section{Conclusions}
+\section{Conclusion}
+With this project we attempted to answer the following question: Can a machine learning model be used to identify a flight with the lowest probability of delay? 
+Our motivation was from the point of view of an airline passenger. 
+If someone needs to book a flight, they would like to book the flight with the lowest chance of delay.
+Our project looked at two different flight-booking scenarios, booking a flight tomorrow and booking a flight in a month's time.
+For these two tasks we combined flight data with relevant weather data, and found that a number of machine learning methods were able to outperform a base marginal classifier.
+Future work could include looking at more complex patterns in the flight data, including multiple delays in a day at a particular airport or particular multi-location routes that are more or less likely to have delays.
 
 
 
