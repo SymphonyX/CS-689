@@ -44,7 +44,9 @@ The challenge was to create a graphical summary of the data, which consisted of 
 The submissions for this explored a variety of aspects of the data, a number of which are mentioned below.
 
 The data for the 2009 ASA Expo came from the United States Department of Transportation (DOT).
-The DOT Bureau of Transportation Statistics (BTS) track flight statistics for domestic flights. For the purposes of our project, we focused on flight statistics from the year 2014, as these flights were more recent than the original expo dataset and still provide a large set of data from which we could obtain conclusions. We obtained the data directly from the BTS website.
+The DOT Bureau of Transportation Statistics (BTS) track flight statistics for domestic flights. 
+For the purposes of our project, we focused on flight statistics from the year 2014, as these flights were more recent than the original expo dataset and still provide a large set of data from which we could obtain conclusions. 
+We obtained the data directly from the BTS website.
 
 The BTS data includes a large number of data fields. Below we enumerate the fields that we included in our analysis, along with a description of each:
 
@@ -66,7 +68,7 @@ As part of the 2009 task, there were a number of submissions that used the datas
 \cite{dey2009minimizing} modeled the data as a graph in order to predict delays for any origin-destination pair.
 
 In addition to work performed as part of the 2009 Expo, there has been additional work using the BTS data.
-\cite{rupp2006does} investigates whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a number of carriers) tend to have more delays.
+\cite{rupp2006does} investigated whether competition for specific routes influences airline performance and found that \emph{busy} routes (that is, routes with a number of carriers) tend to have more delays.
 \cite{stone2015investigating} found that small community airports suffered from departure delays, which then had a large effect on those passengers missing connecting flights and incurring large costs for rebooking.
 
 \subsection{Supplemental Data}
@@ -75,6 +77,11 @@ In addition to the data provided by the BTS, we wanted to augment the feature se
 For our two tasks, this involved obtaining two new sets of features: detailed weather information for the one-day task, and high level weather normals for the one-month task.
 The intuition here was that if you are looking to predict flight delays for tomorrow's flights, a lot of detailed weather information will be available for tomorrow that is most likely very accurate.
 One month in advance, however, the weather information is less likely to be accurate, so we instead looked at ten-year normals for the flight dates, in order to get an idea of weather one month in advance.
+Therefore in order to effectively simulate the amount of data available to a model when dealing with our two task scenarios, we only included the detailed flight information in our one-day feature set, and only included the high-level weather normals in our thirty-day task feature set.
+
+Detailed flight information was obtained from the forecast.io weather API \footnote{\url{http://www.forecast.io}}.
+High level weather normals were obtained from the National Oceanic and Atmospheric Association (NOAA) \footnote{\url{www.getthelink.com}}.
+In the Evaluation section we discuss the selection of features and which featured were included from these data sources for each task. 
 
 
 \section{Exploratory Analysis}
@@ -114,10 +121,27 @@ Then, sweeping across various settings for $f_i$ and various feature $F_i$ yield
 \label{sec:evaluation-methodology}
 \subsection{Selection of Features}
 
-For both of our two tasks, we were able to use a subset of the features provided by the BTS. In addition to the flight data, different weather features were available for each of our two tasks. For the one-day task, a number of detailed weather features were available \textcolor{red}{talk about short-term API}. For the thirty-day task, a higher-level set of features were available via the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI)\cite{noaaclimatedata}. To simulate a prediction task for flights thirty-days in advance, we assumed that the only data available would be high level weather trends (\emph{normals}) that have been collected over periods of time. For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. The data we looked at were temperature normals, including the average temperature, and the temperature highs and lows over the periods. 
+For both of our two tasks, we were able to use a subset of the features provided by the BTS, as mentioned above.
+In addition to the flight data, different weather features were available for each of our two tasks. 
+For the one-day task, a number of detailed weather features were available via the forecast.io API.
+Some of the features included were air pressure readings, precipitation levels, etc. \textcolor{red}{look at slides for others}. 
+For the thirty-day task, a higher-level set of features were available via the National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI)\cite{noaaclimatedata}.
+We included the average, high, and low temperature normals for both the origin and destination airports as features for the thirty-day task.
+To simulate a prediction task for flights thirty-days in advance, we assumed that the only data available would be high level weather trends (\emph{normals}) that have been collected over periods of time. 
+For our task, we looked at the temperature normals collected over a period of years, from 1981 to 2010. 
+The data we looked at were temperature normals, including the average temperature, and the temperature highs and lows over the periods. 
+
+\subsection{Metrics for Evaluation}
+
+We will evaluate our results in two ways: as a standard binary classification task and as a ranking task that is in line with our stated problem. 
+The task can be looked at as a binary classification problem: Will a particular flight be delayed or not?
+In this case, we will use accuracy of our model classifications as the evaluation metric.
+Another metric we can use is a ranking accuracy metric.
+We will consider the following question: Given two flights from the same location to the same destination, which flight has the higher probability of being delayed?
+Our evaluation metric will then be the percentage of flight pairs where the model correctly ranks the flights in terms of probability of being delayed.
 \textcolor{red}{
     \begin{itemize}
-        \item Features available in each of the two task ``types''
+        \item Features available in each of the two task ``types''-Done(JL)
         \item Discussion of evaluation measures: classification accuracy, log-likelihood, ranking accuracy
         \item Learning algorithms under consideration
         \item hyper-parameter optimization
